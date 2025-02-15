@@ -2,12 +2,12 @@ let displayVal = 0;
 let currentVal = 0;
 let currentOp = 0; 
 let digitsAmount = 0;
-let numberPresent = false;
+let previousOp = 0;
 //0 = no operation, 1 = modulus, 2 = divide, 3 = mul, 4 = subtract,5 = add
 let isDecimal = false;
 let decimalPlaces = 10;
 const MAX_DIGIT = 15;
-let calculateState = 0;
+
 
 const display = document.querySelector("#display-value");
 
@@ -15,12 +15,11 @@ function updateDisplay (e) {
     display.textContent = displayVal;
 }
 
-// Handle number presses
+// Handle number presses click
 const numberKeys = document.querySelectorAll(".number");
 numberKeys.forEach((ele) => ele.addEventListener("click", handleNumberButton));
 
 function handleNumberButton (event) {
-    numberPresent = true;
     digitsAmount += 1;
     if (isDecimal) {
         let tempVal = Number(event.target.dataset.number) / (decimalPlaces);
@@ -33,8 +32,24 @@ function handleNumberButton (event) {
         displayVal += Number(event.target.innerHTML);
     }
 
+    if (currentOp != 0) {
+        // if we are currently performing a op, store it and clear our current op
+        previousOp = currentOp;
+        currentOp = 0;
+    }
+
     // update display
     updateDisplay();
+}
+
+function updateNumber (e) {
+    
+}
+
+// handle button press on keyboard
+document.addEventListener("keydown", log);
+function log(event ) {
+    console.log(`${event}`);
 }
 
 // Handle reset button
@@ -45,6 +60,7 @@ function resetCalulator(event) {
     displayVal = 0;
     currentVal = 0;
     currentOp = 0;
+    previousOp = 0;
     isDecimal = false;
     digitsAmount = 0;
     //0 = no operation, 1 = modulus, 2 = divide, 3 = mul, 4 = subtract,5 = add
@@ -75,59 +91,101 @@ function  handleSignBtn(event) {
 }
 
 // handle addBtn
-const addBtn = document.querySelector("#keyAdd");
-addBtn.addEventListener("click", handleAdd);
+const operationBtn = document.querySelectorAll(".operation");
+operationBtn.forEach(ele => ele.addEventListener("click", handleOperation));
 
-function handleAdd(event) {
-    if (currentOp && numberPresent) {
-        // if there is a current operation to handle
-        switch (currentOp) {
+function handleOperation(event) {
+    if (previousOp === 0) {
+        if (currentOp === 0) {
+        // if there is no pervious oerpations to handle, we don't need to operate display
+
+        // step one, store the display value
+        currentVal = displayVal;
+        displayVal = 0; // clear display next
+
+        // get current operation, can switch
+        currentOp = Number(event.target.dataset.op);
+
+       }
+        else  {
+        // handle just changing opertion
+        currentOp = Number(event.target.dataset.op);
+        }
+    }
+    else {
+        currentOp = Number(event.target.dataset.op);
+
+        switch (previousOp){
             case 1:
+                // handle modlus
                 displayVal = currentVal % displayVal;
                 updateDisplay();
-                numberPresent = false;
-                currentOp = 5;
                 break;
             case 2:
+                // handle divide
                 displayVal = currentVal / displayVal;
                 updateDisplay();
-                numberPresent = false;
-                currentOp = 5;
                 break;
             case 3:
+                // handle multiply
                 displayVal = currentVal * displayVal;
                 updateDisplay();
-                numberPresent = false;
-                currentOp = 5;
                 break;
             case 4:
+                // handle minus
                 displayVal = currentVal - displayVal;
                 updateDisplay();
-                numberPresent = false;
-                currentOp = 5;
                 break;
             case 5:
+                // handle add
                 displayVal = currentVal + displayVal;
                 updateDisplay();
-                numberPresent = false;
-                currentOp = 5;
                 break;
+            default :
+                console.log("UNKNOWN ERROR IN OPERATION!");
         }
-
-    } else if (currentOp && !numberPresent) {
-        // There was a prevOperation but a number wasn't pressed, overide it
-        currentOp = 5;
-
-    } else if (!currentOp && numberPresent) {
-        // first time a number was enter followed by the firest operation
+        previousOp = 0;
         currentVal = displayVal;
-        currentOp = 5;
         displayVal = 0;
-        updateDisplay();
-
-    } else {
-        // if no number are present and this is the first operation of the calculator
-        currentVal = 0;
-        currentOp =5;
     }
+    
+}
+
+// handle equal button
+const equalButton = document.querySelector("#keyEqual");
+equalButton.addEventListener("click", handleEqualBtn);
+
+function handleEqualBtn(event) {
+    switch (previousOp){
+        case 1:
+            // handle modlus
+            displayVal = currentVal % displayVal;
+            updateDisplay();
+            break;
+        case 2:
+            // handle divide
+            displayVal = currentVal / displayVal;
+            updateDisplay();
+            break;
+        case 3:
+            // handle multiply
+            displayVal = currentVal * displayVal;
+            updateDisplay();
+            break;
+        case 4:
+            // handle minus
+            displayVal = currentVal - displayVal;
+            updateDisplay();
+            break;
+        case 5:
+            // handle add
+            displayVal = currentVal + displayVal;
+            updateDisplay();
+            break;
+        default :
+            console.log("UNKNOWN ERROR IN OPERATION!");
+    }
+    previousOp = 0;
+    currentVal = displayVal;
+    displayVal = 0;
 }
