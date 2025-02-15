@@ -6,7 +6,7 @@ let previousOp = 0;
 //0 = no operation, 1 = modulus, 2 = divide, 3 = mul, 4 = subtract,5 = add
 let isDecimal = false;
 let decimalPlaces = 10;
-const MAX_DIGIT = 15;
+const MAX_DIGIT = 14;
 
 
 const display = document.querySelector("#display-value");
