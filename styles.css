@@ -37,4 +37,5 @@ button {
     padding: 10px;
     font-size: 50px;
     text-align: right;
+    align-content: center;
 }

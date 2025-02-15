@@ -12,7 +12,15 @@ const MAX_DIGIT = 15;
 const display = document.querySelector("#display-value");
 
 function updateDisplay (e) {
-    display.textContent = displayVal;
+    if (displayVal.toString().length > MAX_DIGIT) {
+        display.textContent = String(displayVal.toPrecision(MAX_DIGIT - 5));
+    }
+    else {
+        display.textContent = String(displayVal).replace(/^0/, '').substr(0, MAX_DIGIT);
+    }
+    
+    console.log(displayVal);
+    console.log(displayVal.toString().length)
 }
 
 // Handle number presses click
@@ -37,7 +45,7 @@ function updateNumber (num) {
     if (isDecimal) {
         let tempVal = num / (decimalPlaces);
         displayVal += tempVal;
-        console.log(displayVal, tempVal);
+        //console.log(displayVal, tempVal);
         decimalPlaces *= 10;
     }
     else {
@@ -177,8 +185,6 @@ function resetCalulator(event ) {
 // Handle decimal
 const decimalButton = document.querySelector("#keyDecimal");
 decimalButton.addEventListener("click", handleDecimalBtn);
-
-
 
 function handleDecimalBtn(event) {
     if (!isDecimal) {
